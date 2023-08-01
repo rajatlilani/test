@@ -1,3 +1,76 @@
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const MyComponent = () => {
+  const [data, setData] = useState([]);
+  const [output, setOutput] = useState([]);
+
+  useEffect(() => {
+    // Replace 'API_URL' with the actual URL of your API
+    axios.get(API_URL)
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const processedData = data.reduce((result, item) => {
+      const existingGroup = result.find((group) => group.JobGroupName === item.JobGroupName);
+
+      if (existingGroup) {
+        const existingType = existingGroup.__children.find((child) => child.JobType === item.JobType);
+        if (!existingType && item.JobType !== null && item.JobTitle !== null) {
+          existingGroup.__children.push({ JobType: item.JobType, JobTitle: item.JobTitle });
+        }
+      } else {
+        const groupItem = {
+          JobGroupName: item.JobGroupName,
+          __children: [],
+        };
+
+        if (item.JobType !== null && item.JobTitle !== null) {
+          groupItem.__children.push({ JobType: item.JobType, JobTitle: item.JobTitle });
+        }
+
+        result.push(groupItem);
+      }
+
+      return result;
+    }, []);
+
+    // Add null values for JobType and JobTitle in the first group
+    if (processedData.length > 0) {
+      processedData[0].JobType = null;
+      processedData[0].JobTitle = null;
+    }
+
+    setOutput(processedData);
+  }, [data]);
+
+  return (
+    <div>
+      {/* Render your component content here */}
+      {/* You can use the 'output' state variable which holds the desired output */}
+      {JSON.stringify(output)}
+    </div>
+  );
+};
+
+export default MyComponent;
+
+
+
+
+
+
+
+/////////////
+
+
 array of objects
 
 const data = [
