@@ -2,6 +2,34 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const data = [
+  { JobGroupName: "a", JobType: 1, JobTitle: 3 },
+  { JobGroupName: "a", JobType: 1, JobTitle: 4 },
+  { JobGroupName: "a", JobType: 2, JobTitle: 5 },
+  { JobGroupName: "b", JobType: 3, JobTitle: 6 },
+  { JobGroupName: "a", JobType: 4, JobTitle: 1 },
+  { JobGroupName: "b", JobType: 5, JobTitle: 5 },
+];
+
+const output = data.reduce((result, item) => {
+  const existingGroup = result.find((group) => group.JobGroupName === item.JobGroupName);
+
+  if (existingGroup) {
+    const existingType = existingGroup.__children.find((child) => child.JobType === item.JobType);
+    if (!existingType) {
+      existingGroup.__children.push({ JobType: item.JobType, JobTitle: item.JobTitle });
+    }
+  } else {
+    result.push({
+      JobGroupName: item.JobGroupName,
+      __children: [{ JobType: item.JobType, JobTitle: item.JobTitle }],
+    });
+  }
+
+  return result;
+}, []);
+
+console.log(output);
   return (
     <div className="App">
       <header className="App-header">
