@@ -1,3 +1,39 @@
+function RadioButtonGroupWithNavigation() {
+  const navigate = useNavigate();
+  const [radioValue, setRadioValue] = useState('option1');
+
+  const handleRadioChange = (value) => {
+    setRadioValue(value);
+    navigate(`/page/${value}`); // Replace with your desired navigation path
+  };
+
+  return (
+    <ButtonGroup>
+      <ToggleButton
+        type="radio"
+        variant="outline-primary"
+        name="radioGroup"
+        value="option1"
+        checked={radioValue === 'option1'}
+        onChange={() => handleRadioChange('option1')}
+      >
+        Option 1
+      </ToggleButton>
+      <ToggleButton
+        type="radio"
+        variant="outline-primary"
+        name="radioGroup"
+        value="option2"
+        checked={radioValue === 'option2'}
+        onChange={() => handleRadioChange('option2')}
+      >
+        Option 2
+      </ToggleButton>
+    </ButtonGroup>
+  );
+}
+
+
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
