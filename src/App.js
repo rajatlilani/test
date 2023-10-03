@@ -1,5 +1,115 @@
-
 import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [departments, setDepartments] = useState([]);
+  const [menus, setMenus] = useState([]);
+  const [ipAddress, setIpAddress] = useState('');
+  const [username, setUsername] = useState('');
+  const [selectedMenus, setSelectedMenus] = useState([]);
+  const [isAccessPresent, setIsAccessPresent] = useState(false);
+
+  useEffect(() => {
+    // Fetch departments API
+    fetch('https://example.com/manageipaccess/departments')
+      .then(response => response.json())
+      .then(data => setDepartments(data))
+      .catch(error => console.error('Error:', error));
+
+    // Fetch menus API
+    fetch('https://example.com/manageipaccess/menus')
+      .then(response => response.json())
+      .then(data => setMenus(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+
+  const handleIpAddressChange = (e) => {
+    setIpAddress(e.target.value);
+  };
+
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleCheckboxChange = (menuId) => {
+    const updatedSelectedMenus = [...selectedMenus];
+    const index = updatedSelectedMenus.indexOf(menuId);
+
+    if (index > -1) {
+      updatedSelectedMenus.splice(index, 1);
+    } else {
+      updatedSelectedMenus.push(menuId);
+    }
+
+    setSelectedMenus(updatedSelectedMenus);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+
+    // Call manageipaccess/IPAddress= API
+    fetch(`https://example.com/manageipaccess/IPAddress=${ipAddress}`)
+      .then(response => response.json())
+      .then(data => {
+        // If successful response, set isAccessPresent state
+        setIsAccessPresent(true);
+        // Use data for further operations
+        console.log(data);
+      })
+      .catch(error => console.error('Error:', error));
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          IP Address:
+          <input type="text" value={ipAddress} onChange={handleIpAddressChange} />
+        </label>
+        <br />
+        {isAccessPresent && (
+          <>
+            <label>
+              Username:
+              <input type="text" value={username} onChange={handleUsernameChange} />
+            </label>
+            <br />
+          </>
+        )}
+        <label>Departments:</label>
+        <select>
+          {departments.map((department) => (
+            <option key={department.DepartmentId} value={department.DepartmentName}>
+              {department.DepartmentName}
+            </option>
+          ))}
+        </select>
+        <br />
+        <label>Menus:</label>
+        {menus.map((menu) => (
+          <div key={menu.Id}>
+            <label>
+              {menu.DisplayName}
+              <input
+                type="checkbox"
+                checked={selectedMenus.includes(menu.Id)}
+                onChange={() => handleCheckboxChange(menu.Id)}
+              />
+            </label>
+          </div>
+        ))}
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+mimport React, { useState, useEffect } from 'react';
 
 const YourComponent = () => {
   const [formData, setFormData] = useState({
