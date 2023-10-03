@@ -1,3 +1,95 @@
+import React, { useState, useEffect } from 'react';
+
+const YourComponent = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    name: '',
+    menus: []
+  });
+
+  useEffect(() => {
+    // Assuming you have a function to fetch accessData
+    const accessData = fetchAccessData(); 
+
+    // Assuming accessData is in JSON format
+    setFormData(prevData => ({
+      ...prevData,
+      name: accessData.name,
+      menus: accessData.Menus.map(menu => ({
+        name: menu.name,
+        checked: menu.permission // Assuming there's a permission field
+      }))
+    }));
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleCheckboxChange = (menuIndex) => {
+    setFormData(prevData => ({
+      ...prevData,
+      menus: prevData.menus.map((menu, index) => 
+        index === menuIndex ? { ...menu, checked: !menu.checked } : menu
+      )
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Do something with formData
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="username">Username:</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          value={formData.username} 
+          onChange={handleInputChange} 
+        />
+      </div>
+      <div>
+        <label htmlFor="name">Name:</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value={formData.name} 
+          onChange={handleInputChange} 
+          readOnly // Assuming you don't want to allow direct edits
+        />
+      </div>
+      <div>
+        {formData.menus.map((menu, index) => (
+          <div key={index}>
+            <label>
+              <input 
+                type="checkbox"
+                checked={menu.checked}
+                onChange={() => handleCheckboxChange(index)}
+              />
+              {menu.name}
+            </label>
+          </div>
+        ))}
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export default YourComponent;
+
+
+
 function RadioButtonGroupWithNavigation() {
   const navigate = useNavigate();
   const [radioValue, setRadioValue] = useState('option1');
