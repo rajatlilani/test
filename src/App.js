@@ -4,6 +4,118 @@ const YourComponent = () => {
   const [formData, setFormData] = useState({
     username: '',
     name: '',
+    menus: [],
+    department: ''
+  });
+
+  useEffect(() => {
+    // Assuming you have a function to fetch accessData and Department data
+    const accessData = fetchAccessData();
+    const departmentData = fetchDepartmentData();
+    const menusData = fetchMenusData();
+
+    // Assuming accessData and departmentData are in JSON format
+    setFormData(prevData => ({
+      ...prevData,
+      name: accessData.name,
+      menus: menusData.map(menu => ({
+        name: menu.name,
+        checked: true // Assuming you want all menus to be initially checked
+      })),
+      departments: departmentData // Assuming departmentData is an array of department names
+    }));
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Send formData to the server
+    // Example: sendFormDataToServer(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="username">Username:</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          value={formData.username} 
+          onChange={handleInputChange} 
+        />
+      </div>
+      <div>
+        <label htmlFor="name">Name:</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value={formData.name} 
+          onChange={handleInputChange} 
+          readOnly // Assuming you don't want to allow direct edits
+        />
+      </div>
+      <div>
+        <label htmlFor="department">Department:</label>
+        <select 
+          id="department" 
+          name="department" 
+          value={formData.department} 
+          onChange={handleInputChange}
+        >
+          <option value="">Select Department</option>
+          {formData.departments.map((department, index) => (
+            <option key={index} value={department}>{department}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        {formData.menus.map((menu, index) => (
+          <div key={index}>
+            <label>
+              <input 
+                type="checkbox"
+                checked={menu.checked}
+                onChange={() => setFormData(prevData => ({
+                  ...prevData,
+                  menus: prevData.menus.map((m, i) => 
+                    i === index ? { ...m, checked: !menu.checked } : m
+                  )
+                }))}
+              />
+              {menu.name}
+            </label>
+          </div>
+        ))}
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export default YourComponent;
+
+
+
+
+
+
+
+
+mimport React, { useState, useEffect } from 'react';
+
+const YourComponent = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    name: '',
     menus: []
   });
 
