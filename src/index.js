@@ -1,3 +1,61 @@
+import React, { useEffect, useState } from 'react';
+import * as signalR from '@microsoft/signalr';
+
+const App = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl('http://localhost:3001/')
+      .build();
+
+    connection.on('ReceiveData', (newData) => {
+      setData(prevData => [...prevData, newData]);
+      sendNotification('New Data Received', { body: `New Data: ${newData}` });
+    });
+
+    connection.start().catch(err => console.error(err));
+
+    return () => {
+      connection.stop();
+    };
+  }, []);
+
+  function requestNotificationPermission() {
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Permission granted for notifications');
+        }
+      });
+    }
+  }
+
+  function sendNotification(title, options) {
+    if (Notification.permission === 'granted') {
+      new Notification(title, options);
+    }
+  }
+
+  return (
+    <div>
+      <h1>Data Stream</h1>
+      <ul>
+        {data.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+
 import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 
