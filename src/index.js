@@ -1,3 +1,67 @@
+import { useEffect, useState } from 'react';
+import * as signalR from '@microsoft/signalr';
+
+const SignalRHub = () => {
+  const [hubConnection, setHubConnection] = useState(null);
+
+  useEffect(() => {
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl('http://localhost:3001/dataHub')
+      .build();
+
+    connection.start().then(() => {
+      setHubConnection(connection);
+    });
+
+    return () => {
+      if (hubConnection !== null) {
+        hubConnection.stop();
+      }
+    };
+  }, [hubConnection]);
+
+  return null;
+};
+
+export default SignalRHub;
+
+
+
+
+
+import React, { useEffect, useState } from 'react';
+import SignalRHub from './SignalRHub';
+
+const App = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const notificationPermission = Notification.permission;
+    if (notificationPermission !== 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted');
+        }
+      });
+    }
+  }, []);
+
+  return (
+    <div className="App">
+      <h1>SignalR Web Push Notification Demo</h1>
+      <SignalRHub />
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
 export function requestNotificationPermission() {
   if (Notification.permission !== "granted") {
     Notification.requestPermission().then((permission) => {
